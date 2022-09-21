@@ -40,6 +40,7 @@ let newUser = false;
 let olderScore = 0;
 let currentScore = 0;
 let questionNumber = 0;
+let seconds = 10;
 
 const startButton = document.querySelector("#Start");
 const questionaire = document.getElementById("questionaire");
@@ -52,6 +53,7 @@ const CurrentScore = document.querySelector("#CurrentScore");
 const options = document.querySelectorAll(".option");
 const results = document.querySelector("#results");
 const finalScore = document.querySelector("#finalScore");
+const timer = document.querySelector("#timer");
 
 const question = document.getElementById("question");
 const option1 = document.getElementById("option1");
@@ -65,8 +67,23 @@ function getName() {
 }
 
 function begin() {
+  // set an interval of 1000 that decreases seconds
+
+  let go = setInterval(function () {
+    if (seconds == 0) {
+      clearInterval(go);
+      console.log("FINE");
+
+      resetAll();
+    } else {
+      seconds--;
+      console.log(seconds);
+      timer.textContent = seconds + " seconds";
+    }
+  }, 1000);
+
   user = textname.value;
-  textname.value = ""
+  textname.value = "";
   YourName.textContent = "Name: " + user;
 
   if (JSON.parse(localStorage.getItem("store"))) {
@@ -134,11 +151,14 @@ function resetAll() {
     olderScore = 0;
     currentScore = 0;
     questionNumber = 0;
+    seconds = 10;
 
     startButton.textContent = "Begin Quiz";
     CurrentScore.textContent = "Current Score: ";
     OldScore.textContent = "Older Score:";
-    results.style.visibility = "hidden"
+    results.style.visibility = "hidden";
+    timer.textContent = seconds + " seconds";
+    YourName.textContent = "Name: " + user;
   }
 }
 
