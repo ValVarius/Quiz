@@ -16,6 +16,25 @@ body {
   margin-left: -250px;
   text-align: center;
 }
+#results {
+  visibility: hidden;
+  position: fixed;
+  width: 500px;
+  height: 200px;
+  padding: 30px 0;
+  border: 3px solid #147d43;
+  background-color: #d4fce6;
+  top: 50%;
+  left: 50%;
+  margin-top: -150px;
+  margin-left: -250px;
+  text-align: center;
+  
+}
+#finalScore{
+  margin-top: 10%;
+
+}
 
 #fname {
   font-size: 30px;

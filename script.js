@@ -34,8 +34,8 @@ let quiz = [
 ];
 
 let store = [];
-console.log(store);
 let user = "";
+let userIndex;
 let newUser = false;
 let olderScore = 0;
 let currentScore = 0;
@@ -50,14 +50,14 @@ const YourName = document.querySelector("#YourName");
 const OldScore = document.querySelector("#OldScore");
 const CurrentScore = document.querySelector("#CurrentScore");
 const options = document.querySelectorAll(".option");
+const results = document.querySelector("#results");
+const finalScore = document.querySelector("#finalScore");
 
 const question = document.getElementById("question");
 const option1 = document.getElementById("option1");
 const option2 = document.getElementById("option2");
 const option3 = document.getElementById("option3");
 const option4 = document.getElementById("option4");
-
-console.log(startButton.textContent);
 
 function getName() {
   startButton.textContent = "Good Luck!";
@@ -66,28 +66,23 @@ function getName() {
 
 function begin() {
   user = textname.value;
+  textname.value = ""
   YourName.textContent = "Name: " + user;
-
-  // check if name exist in local storage and if yes display older score
-  console.log(store);
 
   if (JSON.parse(localStorage.getItem("store"))) {
     store = JSON.parse(localStorage.getItem("store"));
   }
-   //not sure this works
-  console.log(store);
 
-  // if the user name already exist, get their older score
   if (store) {
-    for (const element of store) {
-      if (element.name == user) {
-        olderScore = element.score;
+    for (let i = 0; i < store.length; i++) {
+      if (store[i].name == user) {
+        olderScore = store[i].score;
         OldScore.textContent = "Older Score: " + olderScore;
+        userIndex = i;
       }
     }
   }
 
-  // set new user to true if name is not found
   if (!olderScore) {
     newUser = true;
     OldScore.textContent = "Older Score: 0";
@@ -112,17 +107,27 @@ function nextQuestion() {
     option3.textContent = quiz[questionNumber].a3;
     option4.textContent = quiz[questionNumber].a4;
   } else {
-    console.log("End of test");
-    questionaire.style.visibility = "hidden";
-    console.log(user + " has a score of " + currentScore);
-    // Store name if user is new or update score if user already exists
-
     if (newUser) {
       store.push({ name: user, score: currentScore });
       localStorage.removeItem("store");
-      localStorage.setItem("store", JSON.stringify(store));
+    } else {
+      store[userIndex].score = currentScore;
     }
-    // reset all
+    localStorage.setItem("store", JSON.stringify(store));
+    resetAll();
+  }
+}
+
+function resetAll() {
+  questionaire.style.visibility = "hidden";
+  results.style.visibility = "visible";
+  finalScore.textContent = user + " your score is: \n" + currentScore;
+
+  // wait 4 seconds then reset all
+
+  setTimeout(reset, 4000);
+
+  function reset() {
     store = [];
     user = "";
     newUser = false;
@@ -133,12 +138,11 @@ function nextQuestion() {
     startButton.textContent = "Begin Quiz";
     CurrentScore.textContent = "Current Score: ";
     OldScore.textContent = "Older Score:";
+    results.style.visibility = "hidden"
   }
 }
 
 function checkAnswer(event) {
-  console.log(event.target.id.slice(-1), "  ", quiz[questionNumber].correct);
-
   if (event.target.id.slice(-1) == quiz[questionNumber].correct) {
     currentScore = currentScore + 10;
   }
