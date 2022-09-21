@@ -33,7 +33,10 @@ let quiz = [
   },
 ];
 
+let store = [];
+console.log(store);
 let user = "";
+let newUser = false;
 let olderScore = 0;
 let currentScore = 0;
 let questionNumber = 0;
@@ -43,6 +46,7 @@ const questionaire = document.getElementById("questionaire");
 const nameInput = document.getElementById("name-input");
 const entername = document.querySelector("#entername");
 const textname = document.querySelector("#textname");
+const YourName = document.querySelector("#YourName");
 const OldScore = document.querySelector("#OldScore");
 const CurrentScore = document.querySelector("#CurrentScore");
 const options = document.querySelectorAll(".option");
@@ -62,8 +66,32 @@ function getName() {
 
 function begin() {
   user = textname.value;
+  YourName.textContent = "Name: " + user;
 
   // check if name exist in local storage and if yes display older score
+  console.log(store);
+
+  if (JSON.parse(localStorage.getItem("store"))) {
+    store = JSON.parse(localStorage.getItem("store"));
+  }
+   //not sure this works
+  console.log(store);
+
+  // if the user name already exist, get their older score
+  if (store) {
+    for (const element of store) {
+      if (element.name == user) {
+        olderScore = element.score;
+        OldScore.textContent = "Older Score: " + olderScore;
+      }
+    }
+  }
+
+  // set new user to true if name is not found
+  if (!olderScore) {
+    newUser = true;
+    OldScore.textContent = "Older Score: 0";
+  }
 
   nameInput.style.visibility = "hidden";
 
@@ -88,11 +116,27 @@ function nextQuestion() {
     questionaire.style.visibility = "hidden";
     console.log(user + " has a score of " + currentScore);
     // Store name if user is new or update score if user already exists
+
+    if (newUser) {
+      store.push({ name: user, score: currentScore });
+      localStorage.removeItem("store");
+      localStorage.setItem("store", JSON.stringify(store));
+    }
     // reset all
+    store = [];
+    user = "";
+    newUser = false;
+    olderScore = 0;
+    currentScore = 0;
+    questionNumber = 0;
+
+    startButton.textContent = "Begin Quiz";
+    CurrentScore.textContent = "Current Score: ";
+    OldScore.textContent = "Older Score:";
   }
 }
 
-function register(event) {
+function checkAnswer(event) {
   console.log(event.target.id.slice(-1), "  ", quiz[questionNumber].correct);
 
   if (event.target.id.slice(-1) == quiz[questionNumber].correct) {
@@ -107,5 +151,5 @@ function register(event) {
 startButton.addEventListener("click", getName);
 entername.addEventListener("click", begin);
 options.forEach((item) => {
-  item.addEventListener("click", register);
+  item.addEventListener("click", checkAnswer);
 });
