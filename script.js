@@ -72,12 +72,10 @@ function begin() {
   let go = setInterval(function () {
     if (seconds == 0) {
       clearInterval(go);
-      console.log("FINE");
 
       resetAll();
     } else {
       seconds--;
-      console.log(seconds);
       timer.textContent = seconds + " seconds";
     }
   }, 1000);
